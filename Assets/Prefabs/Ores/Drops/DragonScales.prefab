@@ -1,0 +1,144 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8843029422655009728
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7550289535431731256}
+  - component: {fileID: 8234508697901536371}
+  - component: {fileID: 7353062396720244635}
+  - component: {fileID: 7140738619311162732}
+  m_Layer: 11
+  m_Name: DragonScales
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7550289535431731256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8843029422655009728}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.262023, y: 2.4628172, z: -2.7752275}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 349497097701527730}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8234508697901536371
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8843029422655009728}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7353062396720244635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8843029422655009728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d9da094d58d6f342882f0673e51b42b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+--- !u!114 &7140738619311162732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8843029422655009728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 459a30eea5940e1459955835807eb007, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  craftData:
+    data:
+      type: 0
+      name: Dragon Scale
+      id: 2
+      description: Scales from dragons. Good crafting material.
+      sprite: {fileID: 21300000, guid: f92bc867f0175e143b6dcc9bc17209ae, type: 3}
+      rarity: 0
+--- !u!1001 &4197411762479171115
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7550289535431731256}
+    m_Modifications:
+    - target: {fileID: 3480953971492604708, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_Name
+      value: DefaultItemDrop
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+--- !u!4 &349497097701527730 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4510805828191229593, guid: 3cfb9e15cc6d71543891dc78bba357ba, type: 3}
+  m_PrefabInstance: {fileID: 4197411762479171115}
+  m_PrefabAsset: {fileID: 0}

@@ -13,12 +13,12 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - PlayerCanOnlyLayer
+  - Player
+  - Interactable
+  - AttackLayer
+  - EnemyLayer
   - 
   - 
   - 
