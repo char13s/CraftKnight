@@ -46,4 +46,7 @@ public class CraftSlot : MonoBehaviour
             Quantities.text = Material.CraftData.Data.Quantity.ToString() + "/" + RequiredAmount.ToString();
         }
     }
+    public void UseMaterial() {
+        Material.CraftData.Data.Quantity -= RequiredAmount;
+    }
 }

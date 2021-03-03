@@ -25,9 +25,15 @@ public class CraftableItem : MonoBehaviour
     public void CreateItem() {
         if (Slot1.CheckQuantity()&&Slot2.CheckQuantity()&&Slot3.CheckQuantity()) {
             invent.AddToInvent(Weapon.Data);
+            SubtractMaterialUsed();
         }
     }
     public void OnHighLight() {
         display.Item = this;
+    }
+    private void SubtractMaterialUsed() {
+        Slot1.UseMaterial();
+        Slot2.UseMaterial();
+        Slot3.UseMaterial();
     }
 }

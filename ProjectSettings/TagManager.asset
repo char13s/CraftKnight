@@ -19,8 +19,8 @@ TagManager:
   - Interactable
   - AttackLayer
   - EnemyLayer
-  - 
-  - 
+  - PlayerHurtBox
+  - EnemyAttack
   - 
   - 
   - 

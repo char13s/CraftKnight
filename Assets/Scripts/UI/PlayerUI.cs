@@ -4,7 +4,8 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider mpBar;
     [SerializeField] private Slider stamina;
-   
+    [SerializeField] private GameObject hitSplatlocation;
+    [SerializeField] private HitSplat hitSplat;
     private void Awake() {
         healthBar.maxValue = 100;
         healthBar.value = 100;
@@ -20,7 +21,10 @@ public class PlayerUI : MonoBehaviour {
         PlayerBase.sendStamina += ChangeStamina;
     }
     private void ChangeHealth(float val) {
-        healthBar.value += val;
+        Debug.Log(val);
+        healthBar.value = val;
+        Instantiate(hitSplat,hitSplatlocation.transform);
+        hitSplat.Text.text = val.ToString();
     }
     private void ChangeMp(float val) {
         mpBar.value += val;

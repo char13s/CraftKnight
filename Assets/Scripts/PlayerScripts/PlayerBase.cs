@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 public class PlayerBase : MonoBehaviour {
     private Vector3 displacement;
     private int currentWeapon;
@@ -53,6 +54,7 @@ public class PlayerBase : MonoBehaviour {
     public static event UnityAction<float> sendHealth;
     public static event UnityAction<float> sendMp;
     public static event UnityAction<float> sendStamina;
+    public static event UnityAction pause;
     #endregion
     #region Getters and Setters
 
@@ -94,7 +96,7 @@ public class PlayerBase : MonoBehaviour {
         spearAnims = GetComponentInChildren<SpearAnimations>();
         swordLayer = anim.GetLayerIndex("SwordLayer");
         spearLayer = anim.GetLayerIndex("SpearLayer");
-
+        Health = 100;
         //bigWeaponLayer = anim.GetLayerIndex("BigWeaponLayer");
     }
     void Start() {
@@ -114,26 +116,26 @@ public class PlayerBase : MonoBehaviour {
         DashState.clearLayers += ClearLayers;
         TeleportManager.sendSpot += MovePlayer;
     }
-    void Update() {
-        if (!playerSeal) { 
-        GetInput();
-        }
-    }
-    private void GetInput() {
-        if (!dash) {
-            MovementInput();
-        }
-        BasicAttack();
-        SkillButton();
-        WeaponSwitching();
-        AdvanceMovement();
-        Interact();
-        Dashu();
-    }
-    private void MovementInput() {
-        float x = Input.GetAxis("Horizontal");
-        float y = Input.GetAxis("Vertical");
-        displacement = Vector3.Normalize(new Vector3(x, 0, y));
+    //void Update() {
+    //    if (!playerSeal) { 
+    //    GetInput();
+    //    }
+    //}
+    //private void GetInput() {
+    //    if (!dash) {
+    //        MovementInput();
+    //    }
+    //    BasicAttack();
+    //    SkillButton();
+    //    WeaponSwitching();
+    //    AdvanceMovement();
+    //    Interact();
+    //    Dashu();
+    //}
+    private void OnMovement(InputValue value) {
+        float x = value.Get<Vector2>().x;
+        float y = value.Get<Vector2>().y;
+        displacement = new Vector3(x,0,y);
         if (!dash) {
 
             //transform.position = displacement * speed;
@@ -166,15 +168,52 @@ public class PlayerBase : MonoBehaviour {
         yield return null;
         interactionArea.SetActive(false);
     }
-
-    private void BasicAttack() {//square
-        if (Input.GetButtonDown("Fire3")) {
-            ClearLayers();
-            ArsenalControl();
-            Attack = true;
+    #region Action mappings
+    private void OnAttack() {//square
+        ClearLayers();
+        ArsenalControl();
+        Attack = true;
+    }
+    private void OnWeaponSwitch() {
+        // triangle button
+        ClearLayers();
+        if (CurrentWeapon == 2) {
+            CurrentWeapon = 0;
         }
+        else {
+            CurrentWeapon++;
+        }
+        ArsenalControl();
 
     }
+    private void OnSkillButton() {
+        //Circle
+        if (arsenal[currentWeapon].Item != null) {
+            WeaponId = arsenal[currentWeapon].Item.WeaponId;
+            Mp -= 5;
+        }
+        //Make this type of move take up some typa meter
+
+    }
+    private void OnInteract() {
+        //X button      
+        ClearLayers();
+        interactionArea.SetActive(true);
+        StartCoroutine(TurnOffInteract());
+
+    }
+    private void OnDashu() {
+        //X button  or R2?    
+        Dash = true;
+
+    }
+    private void OnPause() {
+        if (pause != null) {
+            pause();
+        }
+    }
+    #endregion
+
     private void ArsenalControl() {
         if (arsenal[CurrentWeapon].Item != null) {
             switch (arsenal[CurrentWeapon].Item.Type) {
@@ -201,44 +240,14 @@ public class PlayerBase : MonoBehaviour {
         anim.SetLayerWeight(bigWeaponLayer, 0);
         swordAnims.enabled = false;
     }
-    private void WeaponSwitching() {
-        if (Input.GetButtonDown("Fire4")) {// triangle button
-            ClearLayers();
-            if (CurrentWeapon == 2) {
-                CurrentWeapon = 0;
-            }
-            else {
-                CurrentWeapon++;
-            }
-            ArsenalControl();
-        }
-    }
-    private void SkillButton() {
-        if (Input.GetButtonDown("Fire2")) {//Circle
-            if (arsenal[currentWeapon].Item != null) {
-                WeaponId = arsenal[currentWeapon].Item.WeaponId;
-                Mp -= 5;
-            }
-            //Make this type of move take up some typa meter
-        }
-    }
+    
+    
     private void AdvanceMovement() {
-        //if (Input.GetButtonDown("")) {// probably some R2 trigger shit
+        //if (Input.GetButtonDown("")) {// probably some R2 trigger 
         //
         //}
     }
-    private void Interact() {
-        if (Input.GetButtonDown("Interact")) {//X button      
-            ClearLayers();
-            interactionArea.SetActive(true);
-            StartCoroutine(TurnOffInteract());
-        }
-    }
-    private void Dashu() {
-        if (Input.GetButtonDown("Fire1")) {//X button      
-            Dash = true;
-        }
-    }
+    
     #region Event Handlers Methods
     private void DefuseWeaponId() {
         WeaponId = 0;
@@ -252,8 +261,10 @@ public class PlayerBase : MonoBehaviour {
         StartCoroutine(WaitToLand());
     }
     private void SpeedControl(float speed) {
-
-        Rbody.velocity = speed * displacement;
+        //displacement.y = rbody.velocity.y;
+        Vector3 speedHolder=speed * transform.forward;
+        speedHolder.y =Rbody.velocity.y;
+        Rbody.velocity = speedHolder;
         //Debug.Log(rbody.velocity);
         //nav.Move(speed * displacement);
 
@@ -299,6 +310,7 @@ public class PlayerBase : MonoBehaviour {
     }
     private void StopDash() {
         Dash = false;
+        ZeroVelocity();
     }
     private void AddItUp(int val) {
         Money += val;

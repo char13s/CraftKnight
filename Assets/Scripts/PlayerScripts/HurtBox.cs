@@ -10,11 +10,15 @@ public class HurtBox : MonoBehaviour
     {
         player = PlayerBase.GetPlayer();
     }
-
+    
     private void OnTriggerEnter(Collider other) {
-        float damage =player.Defense- other.GetComponent<EnemyHitBox>().Attack;
+        if (other.GetComponent<EnemyHitBox>()) { 
+
+        float damage =Mathf.Clamp(other.GetComponent<EnemyHitBox>().Attack-player.Defense ,1,9999);
+        
         if (damaged != null) {
             damaged(-damage);
+        }
         }
     }
 }

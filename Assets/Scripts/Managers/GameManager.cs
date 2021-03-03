@@ -8,12 +8,9 @@ public class GameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         CanvasManager.pause += StopTime;
+        PlayerBase.pause += PauseGame;
     }
-    void Update() {
-        if (Input.GetButtonDown("Cancel")) {
-            PauseGame();
-        }
-    }
+
     private void PauseGame() {
         if (pause) {
             Time.timeScale = 1;

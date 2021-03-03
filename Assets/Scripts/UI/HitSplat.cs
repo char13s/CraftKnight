@@ -3,6 +3,7 @@ using UnityEngine.UI;
 public class HitSplat : MonoBehaviour
 {
     [SerializeField] private Text text;
+    [SerializeField] private bool forPlayer;
     private MainCam cam;
 
     public Text Text { get => text; set => text = value; }
@@ -14,6 +15,8 @@ public class HitSplat : MonoBehaviour
     void Update()
     {
         transform.position += new Vector3(0,1f,0)*Time.deltaTime;
-        transform.rotation= Quaternion.LookRotation(transform.position - cam.transform.position); ;
+        if (!forPlayer) { 
+        transform.rotation= Quaternion.LookRotation(transform.position - cam.transform.position);
+        }
     }
 }
