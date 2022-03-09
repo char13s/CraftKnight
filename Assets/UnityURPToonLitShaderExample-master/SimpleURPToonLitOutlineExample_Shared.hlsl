@@ -104,12 +104,12 @@ CBUFFER_END
 //so it is fine to write it outside our UnityPerMaterial CBUFFER
 half3 _LightDirection;
 
-struct SurfaceData
-{
-    half3 albedo;
-    half  alpha;
-    half3 emission;
-};
+//struct SurfaceData
+//{
+//    half3 albedo;
+//    half  alpha;
+//    half3 emission;
+//};
 struct LightingData
 {
     half3 normalWS;

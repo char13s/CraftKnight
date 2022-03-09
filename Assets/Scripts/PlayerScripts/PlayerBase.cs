@@ -176,14 +176,14 @@ public class PlayerBase : MonoBehaviour {
     }
     private void OnWeaponSwitch() {
         // triangle button
-        ClearLayers();
-        if (CurrentWeapon == 2) {
-            CurrentWeapon = 0;
-        }
-        else {
-            CurrentWeapon++;
-        }
-        ArsenalControl();
+        //ClearLayers();
+        //if (CurrentWeapon == 2) {
+        //    CurrentWeapon = 0;
+        //}
+        //else {
+        //    CurrentWeapon++;
+        //}
+        //ArsenalControl();
 
     }
     private void OnSkillButton() {
