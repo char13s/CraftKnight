@@ -1,110 +1,74 @@
-//https://github.com/ColinLeung-NiloCat/UnityURPToonLitShaderExample
+// For more information, visit -> https://github.com/ColinLeung-NiloCat/UnityURPToonLitShaderExample
 
-//This file is intented for you to edit and experiment with different lighting equation.
-//Add or edit whatever code you want here
+// This file is intented for you to edit and experiment with different lighting equation.
+// Add or edit whatever code you want here
 
-// #ifndef XXX + #define XXX + #endif is a safe guard best practice in almost every .hlsl, 
+// #pragma once is a safe guard best practice in almost every .hlsl (need Unity2020 or up), 
 // doing this can make sure your .hlsl's user can include this .hlsl anywhere anytime without producing any multi include conflict
-#ifndef SimpleURPToonLitOutlineExample_LightingEquation_Include
-#define SimpleURPToonLitOutlineExample_LightingEquation_Include
+#pragma once
 
-half3 ShadeGIDefaultMethod(SurfaceData surfaceData, LightingData lightingData)
+half3 ShadeGI(ToonSurfaceData surfaceData, ToonLightingData lightingData)
 {
-    // hide 3D feeling by ignore all detail SH
-    // SH 1 (only use this)
-    // SH 234 (ignored)
-    // SH 56789 (ignored)
-    // we just want to tint some average envi color only
+    // hide 3D feeling by ignoring all detail SH (leaving only the constant SH term)
+    // we just want some average envi indirect color only
     half3 averageSH = SampleSH(0);
 
-    return surfaceData.albedo * (_IndirectLightConstColor + averageSH * _IndirectLightMultiplier);   
+    // can prevent result becomes completely black if lightprobe was not baked 
+    averageSH = max(_IndirectLightMinColor,averageSH);
+
+    // occlusion (maximum 50% darken for indirect to prevent result becomes completely black)
+    half indirectOcclusion = lerp(1, surfaceData.occlusion, 0.5);
+    return averageSH * indirectOcclusion;
 }
 
 // Most important part: lighting equation, edit it according to your needs, write whatever you want here, be creative!
-// this function will be used by all direct lights (directional/point/spot)
-half3 ShadeSingleLightDefaultMethod(SurfaceData surfaceData, LightingData lightingData, Light light)
+// This function will be used by all direct lights (directional/point/spot)
+half3 ShadeSingleLight(ToonSurfaceData surfaceData, ToonLightingData lightingData, Light light, bool isAdditionalLight)
 {
     half3 N = lightingData.normalWS;
     half3 L = light.direction;
-    half3 V = lightingData.viewDirectionWS;
-    half3 H = normalize(L+V);
 
     half NoL = dot(N,L);
 
     half lightAttenuation = 1;
 
-    // light's shadow map. If you prefer hard shadow, you can smoothstep() light.shadowAttenuation to make it sharp.
-    lightAttenuation *= lerp(1,light.shadowAttenuation,_ReceiveShadowMappingAmount);
-
-    // light's distance & angle fade for point light & spot light (see GetAdditionalPerObjectLight() in Lighting.hlsl)
+    // light's distance & angle fade for point light & spot light (see GetAdditionalPerObjectLight(...) in Lighting.hlsl)
     // Lighting.hlsl -> https://github.com/Unity-Technologies/Graphics/blob/master/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl
-    lightAttenuation *= min(2,light.distanceAttenuation); //max intensity = 2, prevent over bright if light too close, can expose this float to editor if you wish to
+    half distanceAttenuation = min(4,light.distanceAttenuation); //clamp to prevent light over bright if point/spot light too close to vertex
 
     // N dot L
-    // simplest 1 line cel shade, you can always replace this line by your own better method !
-    lightAttenuation *= smoothstep(_CelShadeMidPoint-_CelShadeSoftness,_CelShadeMidPoint+_CelShadeSoftness, NoL);
+    // simplest 1 line cel shade, you can always replace this line by your own method!
+    half litOrShadowArea = smoothstep(_CelShadeMidPoint-_CelShadeSoftness,_CelShadeMidPoint+_CelShadeSoftness, NoL);
 
-    // don't want direct lighting becomes too bright for toon lit characters? set this value to a lower value 
-    lightAttenuation *= _DirectLightMultiplier;
+    // occlusion
+    litOrShadowArea *= surfaceData.occlusion;
 
-    return surfaceData.albedo * light.color * lightAttenuation;
-}
+    // face ignore celshade since it is usually very ugly using NoL method
+    litOrShadowArea = _IsFace? lerp(0.5,1,litOrShadowArea) : litOrShadowArea;
 
-half3 CompositeAllLightResultsDefaultMethod(half3 indirectResult, half3 mainLightResult, half3 additionalLightSumResult, half3 emissionResult)
-{
-    return indirectResult + mainLightResult + additionalLightSumResult + emissionResult; //simply add them all together, but you can write anything here
-}
+    // light's shadow map
+    litOrShadowArea *= lerp(1,light.shadowAttenuation,_ReceiveShadowMappingAmount);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implement your own lighting equation here! 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    half3 litOrShadowColor = lerp(_ShadowMapColor,1, litOrShadowArea);
 
-half3 ShadeGIYourMethod(SurfaceData surfaceData, LightingData lightingData)
-{
-    return 0; //write your own equation here ! (see ShadeGIDefaultMethod(...))
-}
-half3 ShadeMainLightYourMethod(SurfaceData surfaceData, LightingData lightingData, Light light)
-{
-    return 0; //write your own equation here ! (see ShadeSingleLightDefaultMethod(...))
-}
-half3 ShadeAllAdditionalLightsYourMethod(SurfaceData surfaceData, LightingData lightingData, Light light)
-{
-    return 0; //write your own equation here ! (see ShadeSingleLightDefaultMethod(...))
-}
-half3 CompositeAllLightResultsYourMethod(half3 indirectResult, half3 mainLightResult, half3 additionalLightSumResult, half3 emissionResult)
-{
-    return 0; //write your own equation here ! (see CompositeAllLightResultsDefaultMethod(...))
+    half3 lightAttenuationRGB = litOrShadowColor * distanceAttenuation;
+
+    // saturate() light.color to prevent over bright
+    // additional light reduce intensity since it is additive
+    return saturate(light.color) * lightAttenuationRGB * (isAdditionalLight ? 0.25 : 1);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Once you have implemented a equation in the above section, switch to using your own lighting equation in below section!
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// We split lighting into: 
-//- indirect
-//- main light 
-//- additional light (point light/spot light)
-// for a more isolated lighting control, just in case you need a separate equation for main light & additional light, you can do it easily here
-
-half3 ShadeGI(SurfaceData surfaceData, LightingData lightingData)
+half3 ShadeEmission(ToonSurfaceData surfaceData, ToonLightingData lightingData)
 {
-    //you can switch to ShadeGIYourMethod(...) !
-    return ShadeGIDefaultMethod(surfaceData, lightingData); 
-}
-half3 ShadeMainLight(SurfaceData surfaceData, LightingData lightingData, Light light)
-{
-    //you can switch to ShadeMainLightYourMethod(...) !
-    return ShadeSingleLightDefaultMethod(surfaceData, lightingData, light); 
-}
-half3 ShadeAdditionalLight(SurfaceData surfaceData, LightingData lightingData, Light light)
-{
-    //you can switch to ShadeAllAdditionalLightsYourMethod(...) !
-    return ShadeSingleLightDefaultMethod(surfaceData, lightingData, light); 
-}
-half3 CompositeAllLightResults(half3 indirectResult, half3 mainLightResult, half3 additionalLightSumResult, half3 emissionResult)
-{
-    //you can switch to CompositeAllLightResultsYourMethod(...) !
-    return CompositeAllLightResultsDefaultMethod(indirectResult,mainLightResult,additionalLightSumResult,emissionResult); 
+    half3 emissionResult = lerp(surfaceData.emission, surfaceData.emission * surfaceData.albedo, _EmissionMulByBaseColor); // optional mul albedo
+    return emissionResult;
 }
 
-#endif
+half3 CompositeAllLightResults(half3 indirectResult, half3 mainLightResult, half3 additionalLightSumResult, half3 emissionResult, ToonSurfaceData surfaceData, ToonLightingData lightingData)
+{
+    // [remember you can write anything here, this is just a simple tutorial method]
+    // here we prevent light over bright,
+    // while still want to preserve light color's hue
+    half3 rawLightSum = max(indirectResult, mainLightResult + additionalLightSumResult); // pick the highest between indirect and direct light
+    return surfaceData.albedo * rawLightSum + emissionResult;
+}
